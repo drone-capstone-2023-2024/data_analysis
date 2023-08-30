@@ -15,6 +15,7 @@ class DroneDatasetExtractor:
         if os.path.exists(self.local_copy_path):
             f = open(self.local_copy_path, "r")
             self.site_contents = f.read()
+            print('loaded local copy of site')
         else:
             headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
                        'User-Agent': 'Mozilla / 5.0 (X11;Linux x86_64; rv: 109.0) Gecko/20100101 Firefox/115.0'
@@ -22,7 +23,8 @@ class DroneDatasetExtractor:
             response = requests.get(self.url, headers=headers)
 
             if response.status_code == 200:
-                 self.site_contents = response.text
+                print('pulled new local copy of site')
+                self.site_contents = response.text
             else:
                 print('Failed to retrieve the web page. Status code:', response.status_code)
                 sys.exit(1)
