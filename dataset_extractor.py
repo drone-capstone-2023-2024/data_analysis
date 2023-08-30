@@ -11,7 +11,7 @@ class DroneDatasetExtractor:
 
     site_contents = ''
 
-    def init(self):
+    def __init__(self):
         if os.path.exists(self.local_copy_path):
             f = open(self.local_copy_path, "r")
             self.site_contents = f.read()
@@ -22,7 +22,7 @@ class DroneDatasetExtractor:
             response = requests.get(self.url, headers=headers)
 
             if response.status_code == 200:
-                self.site_contents = response.text
+                 self.site_contents = response.text
             else:
                 print('Failed to retrieve the web page. Status code:', response.status_code)
                 sys.exit(1)
@@ -51,6 +51,10 @@ class DroneDatasetExtractor:
 
             drones.append(details)
 
-        print(drones)
-
         return drones
+
+
+if __name__ == "__main__":
+    datasetExtractor = DroneDatasetExtractor()
+
+    print(datasetExtractor.extract_details())

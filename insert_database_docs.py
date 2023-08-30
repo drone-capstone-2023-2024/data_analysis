@@ -6,7 +6,7 @@ class DatabaseInsert:
     db = None
     collection = None
 
-    def init(self):
+    def __init__(self):
         self.client = pymongo.MongoClient("mongodb://localhost:27017/")
         self.db = self.client["your_database_name"]
         self.collection = self.db["your_collection_name"]
