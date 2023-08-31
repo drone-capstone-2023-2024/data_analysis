@@ -12,7 +12,7 @@ class DroneDatasetExtractor:
                'User-Agent': 'Mozilla / 5.0 (X11;Linux x86_64; rv: 109.0) Gecko/20100101 Firefox/115.0'}
 
     url = 'https://drones.cnas.org/drones/'
-    local_copy_path = 'drone-repo-page.html'  # Note to self: this code was written for the site version as of Aug 30, 2023
+    local_copy_path = 'drone-repo-page.html'  # Note: code was written for the site version as of Aug 30, 2023
 
     site_contents = ''
 

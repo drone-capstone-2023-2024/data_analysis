@@ -1,6 +1,5 @@
 import os
 import shutil
-import sys
 
 import requests
 
@@ -35,4 +34,3 @@ def fetch_and_cache_photo(file_url):
         else:
             print('Failed to receive photo for ' + file_url)
             return '-'
-
