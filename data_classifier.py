@@ -2,6 +2,7 @@
 
 import tkinter
 from PIL import Image, ImageTk
+import webbrowser
 
 from dataset_extractor import DroneDatasetExtractor
 
@@ -17,12 +18,11 @@ class DataClassifier:
     type_sel_label = None
     submit_button = None
 
-
     def __init__(self, drones):
         self.drones = drones
-        self.initGui()
+        self.init_gui()
 
-    def initGui(self):
+    def init_gui(self):
         self.root = tkinter.Tk()
         self.root.title('Drone Classifier')
 
@@ -34,8 +34,9 @@ class DataClassifier:
         self.image_label.pack()
 
         # Create a text field
-        self.text_label = tkinter.Label(self.root, text=self.create_label_text())
+        self.text_label = tkinter.Label(self.root)
         self.text_label.pack()
+        self.setup_platform_name_label()
 
         self.type_sel_label = tkinter.Entry(self.root)
         self.type_sel_label.pack()
@@ -59,10 +60,15 @@ class DataClassifier:
             self.photo = ImageTk.PhotoImage(image)
             self.image_label['image'] = self.photo
 
-            self.text_label['text'] = self.create_label_text()
+            self.setup_platform_name_label()
 
-    def create_label_text(self):
-        return 'Enter type for ' + self.drones[self.current_drone_index]['Platform'] + ':'
+    def setup_platform_name_label(self):
+        drone_name = self.drones[self.current_drone_index]['Platform']
+
+        self.text_label['text'] = drone_name
+
+        self.text_label.bind("<Button-1>", lambda e: webbrowser.open_new_tab('https://www.google.com/search?q=' +
+                                                                             drone_name.replace(' ', '+')))
 
 
 if __name__ == "__main__":
