@@ -73,6 +73,9 @@ class DataClassifier:
         self.update_ui()
 
     def jump_to_drone(self, index):
+        if index < 0 or index >= len(self.drones):
+            return
+
         self.current_drone_index = index
 
         self.update_ui()
@@ -105,7 +108,7 @@ class DataClassifier:
                                                                              drone_name.replace(' ', '+')))
 
     def setup_control_instruct_label(self):
-        self.control_label['text'] = ''
+        self.control_label['text'] = 'Previous/Next (N/M)\n'
 
         for i in range(len(classification_map)):
             self.control_label['text'] += str(i + 1) + ': ' + classification_map[i] + ', '
