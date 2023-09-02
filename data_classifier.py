@@ -1,5 +1,3 @@
-# TODO: make plane name hyperlinks to google, use keyboard for selecting classification and allow going forwards and backwards, max screen
-
 import tkinter
 from PIL import Image, ImageTk
 import webbrowser
@@ -21,6 +19,7 @@ class DataClassifier:
     image_label = None
     text_label = None
     control_label = None
+    specs_label = None
     progress_label = None
 
     input_map = {}
@@ -30,7 +29,7 @@ class DataClassifier:
         self.init_gui()
 
     def init_gui(self):
-        self.def_input_map();
+        self.def_input_map()
 
         self.root = tkinter.Tk()
         self.root.title('Drone Classifier')
@@ -49,6 +48,10 @@ class DataClassifier:
         self.control_label = tkinter.Label(self.root, font=('Helveticabold', 15))
         self.control_label.pack()
         self.setup_control_instruct_label()
+
+        # Create specs label
+        self.specs_label = tkinter.Label(self.root, font=('Helveticabold', 15))
+        self.specs_label.pack()
 
         # Create control instruct label
         self.progress_label = tkinter.Label(self.root, font=('Helveticabold', 15))
@@ -83,6 +86,7 @@ class DataClassifier:
 
             self.setup_platform_name_label()
             self.update_progress_label()
+            self.update_specs_label()
 
     def setup_platform_name_label(self):
         drone_name = ''
@@ -108,6 +112,21 @@ class DataClassifier:
 
     def update_progress_label(self):
         self.progress_label['text'] = str(self.current_drone_index + 1) + ' / ' + str(len(self.drones))
+
+    def update_specs_label(self):
+        self.specs_label['text'] = '\n'
+
+        current_drone = self.drones[self.current_drone_index]
+
+        count = 1
+        for spec in current_drone:
+            self.specs_label['text'] += spec + ': ' + current_drone[spec]
+            if count % 2 == 1:
+                self.specs_label['text'] += ', '
+            else:
+                self.specs_label['text'] += '\n'
+
+            count += 1
 
     def def_input_map(self):
         for i in range(len(classification_map)):
