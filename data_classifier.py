@@ -1,3 +1,5 @@
+import json
+import os
 import tkinter
 from PIL import Image, ImageTk
 import webbrowser
@@ -10,6 +12,8 @@ classification_map = ['copter (quad)',
                       'plane',
                       'hybrid (tilt roto)',
                       'hybrid (fixed wings)']
+
+CLASS_SAVE_FILE = 'classifications.json'
 
 
 class DataClassifier:
@@ -146,10 +150,26 @@ class DataClassifier:
             self.input_map[key]()
 
 
-if __name__ == '__main__':
-    datasetExtractor = DroneDatasetExtractor()
+def save_class_to_file(drones):
+    with open(CLASS_SAVE_FILE, 'w') as f:
+        json.dump(drones, f)
 
-    classifier = DataClassifier(datasetExtractor.extract_details())
+
+def load_class_file():
+    if os.path.exists(CLASS_SAVE_FILE):
+        with open(CLASS_SAVE_FILE, 'r') as f:
+            return json.load(f)
+    else:
+        return None
+
+
+if __name__ == '__main__':
+    existing_drones = load_class_file()
+    if existing_drones is None:
+        datasetExtractor = DroneDatasetExtractor()
+        existing_drones = datasetExtractor.extract_details()
+
+    classifier = DataClassifier(existing_drones)
 
     print(classifier.drones)
 
@@ -157,3 +177,5 @@ if __name__ == '__main__':
     for drone in classifier.drones:
         if 'type' in drone:
             print(drone['Platform'] + ': ' + drone['type'])
+
+    save_class_to_file(classifier.drones)
