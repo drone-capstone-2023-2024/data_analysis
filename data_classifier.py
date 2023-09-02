@@ -21,6 +21,7 @@ class DataClassifier:
     image_label = None
     text_label = None
     control_label = None
+    progress_label = None
 
     input_map = {}
 
@@ -37,22 +38,23 @@ class DataClassifier:
         self.root.bind('<KeyPress>', self.key_input_callback)
 
         # Load and display an image
-        image = Image.open(self.drones[self.current_drone_index]['picture'])
-        image = image.resize((800, 500), Image.Resampling.LANCZOS)
-        self.photo = ImageTk.PhotoImage(image)
-
-        self.image_label = tkinter.Label(self.root, image=self.photo, width=800, height=500)
+        self.image_label = tkinter.Label(self.root, width=800, height=500)
         self.image_label.pack()
 
         # Create drone name label
         self.text_label = tkinter.Label(self.root, font=('Helveticabold', 15), fg='blue', cursor='hand2')
         self.text_label.pack()
-        self.setup_platform_name_label()
 
         # Create control instruct label
         self.control_label = tkinter.Label(self.root, font=('Helveticabold', 15))
         self.control_label.pack()
         self.setup_control_instruct_label()
+
+        # Create control instruct label
+        self.progress_label = tkinter.Label(self.root, font=('Helveticabold', 15))
+        self.progress_label.pack()
+
+        self.update_ui()
 
         self.root.mainloop()
 
@@ -62,6 +64,11 @@ class DataClassifier:
             return
         self.drones[self.current_drone_index]['type'] = classification_map[class_id]
         self.current_drone_index += 1
+
+        self.update_ui()
+
+    def jump_to_drone(self, index):
+        self.current_drone_index = index
 
         self.update_ui()
 
@@ -75,9 +82,15 @@ class DataClassifier:
             self.image_label['image'] = self.photo
 
             self.setup_platform_name_label()
+            self.update_progress_label()
 
     def setup_platform_name_label(self):
-        drone_name = self.drones[self.current_drone_index]['Platform']
+        drone_name = ''
+
+        if 'type' in self.drones[self.current_drone_index]:
+            drone_name += 'Current Type: ' + self.drones[self.current_drone_index]['type'] + '\n'
+
+        drone_name += self.drones[self.current_drone_index]['Platform']
 
         self.text_label['text'] = drone_name
 
@@ -93,11 +106,15 @@ class DataClassifier:
 
         self.control_label['text'] = self.control_label['text'].rstrip(', ')
 
+    def update_progress_label(self):
+        self.progress_label['text'] = str(self.current_drone_index + 1) + ' / ' + str(len(self.drones))
+
     def def_input_map(self):
-        self.input_map = {'1': lambda: self.classify(0),  # cannot use loop here as refs to them will be the same
-                          '2': lambda: self.classify(1),
-                          '3': lambda: self.classify(2),
-                          '4': lambda: self.classify(3)}
+        for i in range(len(classification_map)):
+            self.input_map[str(i+1)] = lambda x=i: self.classify(x)
+
+        self.input_map['n'] = lambda: self.jump_to_drone(self.current_drone_index - 1)
+        self.input_map['m'] = lambda: self.jump_to_drone(self.current_drone_index + 1)
 
     def key_input_callback(self, event):
         key = event.char
