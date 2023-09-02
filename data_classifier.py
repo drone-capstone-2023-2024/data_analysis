@@ -4,10 +4,12 @@ import webbrowser
 
 from dataset_extractor import DroneDatasetExtractor
 
-classification_map = ['quadcopter',
+classification_map = ['copter (quad)',
+                      'copter (6)',
+                      'copter (8)',
                       'plane',
-                      'hybrid (tilt rotor)',
-                      'hybrid (winged copter)']
+                      'hybrid (tilt roto)',
+                      'hybrid (fixed wings)']
 
 
 class DataClassifier:
