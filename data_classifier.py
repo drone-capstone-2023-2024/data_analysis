@@ -7,9 +7,10 @@ import webbrowser
 from dataset_extractor import DroneDatasetExtractor
 
 classification_map = ['quadcopter',
-                   'plane',
-                   'hybrid (tilt rotor)',
-                   'hybrid (winged copter)']
+                      'plane',
+                      'hybrid (tilt rotor)',
+                      'hybrid (winged copter)']
+
 
 class DataClassifier:
     current_drone_index = 0
@@ -88,7 +89,7 @@ class DataClassifier:
         self.control_label['text'] = ''
 
         for i in range(len(classification_map)):
-            self.control_label['text'] += str(i+1) + ': ' + classification_map[i] + ', '
+            self.control_label['text'] += str(i + 1) + ': ' + classification_map[i] + ', '
 
         self.control_label['text'] = self.control_label['text'].rstrip(', ')
 
