@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import webbrowser
 
 from dataset_extractor import DroneDatasetExtractor
+from insert_database_docs import DatabaseManager
 
 classification_map = ['copter (quad)',
                       'copter (6)',
@@ -27,11 +28,15 @@ class DataClassifier:
     control_label = None
     specs_label = None
     progress_label = None
+    database_push_button = None
 
     input_map = {}
 
-    def __init__(self, drones):
+    database = None
+
+    def __init__(self, drones, database):
         self.drones = drones
+        self.database = database
         self.init_gui()
 
     def init_gui(self):
@@ -62,6 +67,9 @@ class DataClassifier:
         # Create control instruct label
         self.progress_label = tkinter.Label(self.root, font=('Helveticabold', 15))
         self.progress_label.pack()
+
+        # Upload to database button
+        self.database_push_button = tkinter.Button(self.root, text="Submit", command=self.push_database)
 
         self.update_ui()
 
@@ -149,6 +157,9 @@ class DataClassifier:
         if key in self.input_map:
             self.input_map[key]()
 
+    def push_database(self):
+        self.database.insert_docs()
+
 
 def save_class_to_file(drones):
     with open(CLASS_SAVE_FILE, 'w') as f:
@@ -164,12 +175,14 @@ def load_class_file():
 
 
 if __name__ == '__main__':
+    db = DatabaseManager()
+
     existing_drones = load_class_file()
     if existing_drones is None:
         datasetExtractor = DroneDatasetExtractor()
         existing_drones = datasetExtractor.extract_details()
 
-    classifier = DataClassifier(existing_drones)
+    classifier = DataClassifier(existing_drones, db)
 
     print(classifier.drones)
 
