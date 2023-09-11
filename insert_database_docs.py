@@ -17,6 +17,8 @@ class DatabaseManager:
 
         self.collection.insert_many(docs)
 
+        print("Inserted documents")
+
     def update_docs(self, docs):
         pass
 
@@ -30,9 +32,27 @@ class DatabaseManager:
 def standardize_units(docs):
     for drone in docs:
         for spec in drone:
-            split_spec = drone[spec].split(' ')
-            if len(split_spec) == 2:  # assuming that numbers always have two parts: value and unit
-                number = split_spec[0].replace(',', '')
-                drone[spec] = str(number)
+            split_spec = strip_unit(drone[spec])
+            drone[spec] = split_spec
 
     return docs
+
+
+def strip_unit(string):
+    new_string = string
+    split = string.split(' ')
+
+    if len(split) == 2:  # assuming that numbers always have two parts: value and unit
+        first = split[0]
+        second = split[1]
+
+        for unit in ['hrs', 'hr', 'km/h', 'km', 'm', 'kg']:
+            if second == unit:  # found measurement string
+                first = first.replace(',', '')
+                if first != '--':
+                    new_string = float(first)
+                else:
+                    new_string = first
+                break
+
+    return new_string
