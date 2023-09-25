@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 import webbrowser
 
 from dataset_extractor import DroneDatasetExtractor
-from insert_database_docs import DatabaseManager
+from insert_database_docs import DatabaseManager, standardize_units
 
 classification_map = ['helicopter',
                       'copter (quad)',
@@ -199,4 +199,4 @@ if __name__ == '__main__':
         if 'type' in drone:
             print(drone['Platform'] + ': ' + drone['type'])
 
-    # save_class_to_file(classifier.drones)
+    save_class_to_file(standardize_units(classifier.drones))
