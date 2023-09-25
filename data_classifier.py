@@ -5,11 +5,15 @@ from PIL import Image, ImageTk
 import webbrowser
 
 from dataset_extractor import DroneDatasetExtractor
+from insert_database_docs import DatabaseManager, standardize_units
 
-classification_map = ['copter (quad)',
+classification_map = ['helicopter',
+                      'copter (quad)',
                       'copter (6)',
                       'copter (8)',
+                      'copter (5)',
                       'plane',
+                      'plane (VTOL)',
                       'hybrid (tilt roto)',
                       'hybrid (fixed wings)']
 
@@ -27,11 +31,15 @@ class DataClassifier:
     control_label = None
     specs_label = None
     progress_label = None
+    database_push_button = None
 
     input_map = {}
 
-    def __init__(self, drones):
+    database = None
+
+    def __init__(self, drones, database):
         self.drones = drones
+        self.database = database
         self.init_gui()
 
     def init_gui(self):
@@ -41,6 +49,10 @@ class DataClassifier:
         self.root.title('Drone Classifier')
         self.root.geometry('1920x1080')
         self.root.bind('<KeyPress>', self.key_input_callback)
+
+        # Upload to database button
+        self.database_push_button = tkinter.Button(self.root, text="Update Remote Database", command=self.push_database)
+        self.database_push_button.pack()
 
         # Load and display an image
         self.image_label = tkinter.Label(self.root, width=800, height=500)
@@ -62,6 +74,8 @@ class DataClassifier:
         # Create control instruct label
         self.progress_label = tkinter.Label(self.root, font=('Helveticabold', 15))
         self.progress_label.pack()
+
+
 
         self.update_ui()
 
@@ -109,7 +123,8 @@ class DataClassifier:
 
         # set hyperlink callback to open search for device on Google
         self.text_label.bind("<Button-1>", lambda e: webbrowser.open_new_tab('https://www.google.com/search?q=' +
-                                                                             drone_name.replace(' ', '+')))
+                                                                             drone_name.replace(' ', '+') + '+'
+                                                                             + self.drones[self.current_drone_index]['Company']))
 
     def setup_control_instruct_label(self):
         self.control_label['text'] = 'Previous/Next (N/M)\n'
@@ -149,6 +164,10 @@ class DataClassifier:
         if key in self.input_map:
             self.input_map[key]()
 
+    def push_database(self):
+        # self.database.insert_docs(self.drones)
+        pass
+
 
 def save_class_to_file(drones):
     with open(CLASS_SAVE_FILE, 'w') as f:
@@ -164,12 +183,14 @@ def load_class_file():
 
 
 if __name__ == '__main__':
+    db = DatabaseManager()
+
     existing_drones = load_class_file()
     if existing_drones is None:
         datasetExtractor = DroneDatasetExtractor()
         existing_drones = datasetExtractor.extract_details()
 
-    classifier = DataClassifier(existing_drones)
+    classifier = DataClassifier(existing_drones, db)
 
     print(classifier.drones)
 
@@ -178,4 +199,4 @@ if __name__ == '__main__':
         if 'type' in drone:
             print(drone['Platform'] + ': ' + drone['type'])
 
-    save_class_to_file(classifier.drones)
+    save_class_to_file(standardize_units(classifier.drones))
